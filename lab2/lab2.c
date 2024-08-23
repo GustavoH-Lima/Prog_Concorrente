@@ -4,14 +4,32 @@
 typedef struct
 {
     int inicio;
-    float *vec1;
-    float *vec2;
-    float *fatia;
+    int fatia;
 }args;
+
+float *vetor1,*vetor2; //Variaveis globais pra não acessar a memória duas vezes
+
+void* conc_dot(void* arg)
+{
+    double *sum = malloc(sizeof(double));
+    if (!sum) {
+        perror("Erro ao alocar memória");
+        pthread_exit(NULL);
+    }
+    *sum = 0;
+    args argm = *(args*) arg;
+    int inicio = argm.inicio;
+    for(int i=0;i<argm.fatia;i++)
+    {
+        *sum+= (vetor1[inicio + i] * vetor2[inicio + i]);
+    }
+    free(arg);
+    pthread_exit((void*) sum);
+}
 
 int main(int argc,char*argv[])
 {
-    int n_threads,tam;
+    int n_threads,tam,fatia,resto;
     FILE *arq;
     size_t ret;
     double result;
@@ -53,5 +71,64 @@ int main(int argc,char*argv[])
     ret = fread(&result,sizeof(double),1,arq);
     fclose(arq); //Fechando o arquivo;
 
+    vetor1 = vec1;
+    vetor2 = vec2;
+
+    if(tam > n_threads)
+    {
+        fatia = tam/n_threads;
+        resto = tam%n_threads;
+    }
+    else
+    {
+        fatia = 1;
+        n_threads = tam;
+    }
+
+    pthread_t tid_sistema[n_threads];
+    args *arg;
+    int inicio=0;
+    //Lançando as threads
+    for(int i=0; i<n_threads;i++)
+    {
+        arg = (args*) malloc(sizeof(args));
+        if(!arg)
+        {
+            puts(" --Erro alocação dos argumentos");
+            exit(5);
+        }
+        arg->inicio = inicio;
+        if(i<resto)
+        {
+            arg->fatia = fatia+1;
+            inicio+=fatia+1;
+        }
+        else
+        {
+            arg->fatia = fatia;
+            inicio+=fatia;
+        }
+        if(pthread_create(&tid_sistema[i],NULL,conc_dot,(void*) arg))
+        {
+            puts("--ERRO: pthread_create()");
+            exit(6);
+        }
+    }
+
+    double soma=0,*parcela;
+    //Esperando todas terminarem
+    for(int i=0;i<n_threads;i++)
+    {
+        if(pthread_join(tid_sistema[i],(void **) &parcela))
+        {
+            puts("--ERRO: pthread_join()");
+            exit(7);
+        }
+        soma+=*parcela;
+    }
+    free(parcela);
+    //Calculo variação relativa
+    double var = (result - soma)/result;
+    printf("%lf\n",var);
     return 0;
 }
