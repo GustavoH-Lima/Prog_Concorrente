@@ -19,7 +19,7 @@ for i in $(seq 1 $n_execucoes); do
     echo "Execução $i de $n_execucoes" >> "$arquivo_saida"
     
     # Gera dois números aleatórios entre 1000 e 200000
-    param1=$((RANDOM % 100))
+    param1=$((RANDOM % 99 + 1))
     param2=$((RANDOM % 199001 + 1000))
     
     echo "Parâmetros de entrada: $param2, $arquivo_binario" >> "$arquivo_saida"
@@ -37,9 +37,16 @@ for i in $(seq 1 $n_execucoes); do
     # Executa o segundo programa para fazer operações com o arquivo binário
     resultado=$(./$programa_operacoes $param1 $arquivo_binario)
 
+    retorno_programa_operacoes=$?
+
+    # Verifica o código de retorno do segundo programa
+    if [ $retorno_programa_operacoes -ne 0 ]; then
+        echo "Erro: O segundo programa retornou código $retorno_programa_operacoes. Encerrando o teste." >> "$arquivo_saida"
+        exit 3
+    fi
     # Exibe o resultado do segundo programa
     echo "Resultado do programa de operações: $resultado" >> "$arquivo_saida"
-
+    
     # Limpa o arquivo binário para a próxima execução
     rm -f $arquivo_binario
 

@@ -31,7 +31,7 @@ int verifica(double result,double gabarito)
 {
     double var = (gabarito - result)/gabarito;
     printf("Variação relativa: %lf\n",var); // Se quiser printar o resultado
-    if(var < 0.00001 && var >0.00001) 
+    if(var < 0.00001 && var > -0.00001) 
     {
         puts("Resultado bom!");
         return 0;
@@ -144,6 +144,5 @@ int main(int argc,char*argv[])
     }
     free(parcela);
     //Calculo variação relativa
-
     return verifica(soma,result);
 }
