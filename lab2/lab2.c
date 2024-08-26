@@ -11,7 +11,7 @@ float *vetor1,*vetor2; //Variaveis globais pra não acessar a memória duas veze
 
 void* conc_dot(void* arg)
 {
-    double *sum = malloc(sizeof(double));
+    double *sum = malloc(sizeof(double)); //Malloc pra salvar na pilha o endereço
     if (!sum) {
         perror("Erro ao alocar memória");
         pthread_exit(NULL);
@@ -25,6 +25,22 @@ void* conc_dot(void* arg)
     }
     free(arg);
     pthread_exit((void*) sum);
+}
+
+int verifica(double result,double gabarito)
+{
+    double var = (gabarito - result)/gabarito;
+    printf("Variação relativa: %lf\n",var); // Se quiser printar o resultado
+    if(var < 0.0001) 
+    {
+        puts("Resultado bom!");
+        return 0;
+    }
+    else 
+    {
+        puts("Resultado ruim");
+        return 8;
+    }
 }
 
 int main(int argc,char*argv[])
@@ -128,7 +144,6 @@ int main(int argc,char*argv[])
     }
     free(parcela);
     //Calculo variação relativa
-    double var = (result - soma)/result;
-    printf("%lf\n",var);
-    return 0;
+
+    return verifica(soma,result);
 }
