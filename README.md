@@ -1,0 +1,1 @@
+Repositório para os laboratórios da matéria ICP361 Programação Concorrente do período 2024.2
