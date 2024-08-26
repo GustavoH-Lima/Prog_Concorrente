@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#define erro 0.000001
+
 typedef struct
 {
     int inicio;
@@ -31,7 +33,7 @@ int verifica(double result,double gabarito)
 {
     double var = (gabarito - result)/gabarito;
     printf("Variação relativa: %lf\n",var); // Se quiser printar o resultado
-    if(var < 0.00001 && var > -0.00001) 
+    if(var < erro && var > -erro) 
     {
         puts("Resultado bom!");
         return 0;
