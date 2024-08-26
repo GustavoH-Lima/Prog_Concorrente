@@ -13,4 +13,4 @@ execute-o com "$./nome2 T arquivo" onde "T" é o número de threads desejado e "
 
 Execute o tester como "./tester.sh ./nome ./nome2 N" onde N é o numero de execuções desejada.
 
-O resultado é avaliado com a variação relativa, se ela for menor do que 0.0001, o programa retorna como correto, caso contrário, retorna como erro.
+O resultado é avaliado com a variação relativa, se ela for menor do que 0.00001, o programa retorna como correto, caso contrário, retorna como erro.
