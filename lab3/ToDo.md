@@ -1,8 +1,8 @@
 # Passos implementação
 
 
-- [] Implementar multiplicação de matrizes sequencial
-    - [] Matrizes Float
+- [X] Implementar multiplicação de matrizes sequencial
+    - [X] Matrizes Float
 
 - [] Implementar multiplicação de matrizes concorrente
     - [] Entrada: Matriz float N x M
