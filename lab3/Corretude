@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void sequencial(float *m1, float *m2,int linhas, int colunas,char *nome) //Linhas da primeira, colunas da segunda
+{
+    FILE *resultado;
+    resultado = fopen(nome,"wb+");
+    if(!resultado)
+    {
+        puts("Não foi possivel abrir o arquivo");
+        return 1;
+    }
+    fwrite(&linhas,sizeof(int),1,resultado);
+    fwrite(&colunas,sizeof(int),1,resultado);
+    int tam = linhas * colunas;
+    float soma;
+
+    for(int i=0;i<linhas;i++)
+    {
+        for(int j=0;j<colunas;j++)
+        {
+            soma = 0;
+            for (int k=0; k<linhas;k++)
+            {
+                soma+= m1[i*linhas + k]*m2[k*colunas + j];
+            }
+            fwrite(&soma,sizeof(float),1,resultado); 
+        }
+    }
+}
+
+int main(void)
+{
+    return 0;
+}
