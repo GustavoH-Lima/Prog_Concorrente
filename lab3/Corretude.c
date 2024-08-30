@@ -7,18 +7,17 @@ typedef struct
     int comum;
 } args_M;
 
-int sequencial(float *m1, float *m2,args_M arg,char *nome) //Linhas da primeira, colunas da segunda
+float *sequencial(float *m1, float *m2,args_M arg) //Linhas da primeira, colunas da segunda
 {
-    FILE *resultado;
-    int linhas_m1 = arg.linhas, colunas_m2 = arg.colunas;
-    resultado = fopen(nome,"wb+");
+    float *resultado;
+    int linhas_m1 = arg.linhas, colunas_m2 = arg.colunas,tam;
+    tam = linhas_m1 * colunas_m2;
+    resultado = (float *) malloc (tam * sizeof(float*));
     if(!resultado)
     {
-        puts("Não foi possivel abrir o arquivo");
-        return 1;
+        puts("Não foi possivel alocar memória");
+        exit(1);
     }
-    fwrite(&linhas_m1,sizeof(int),1,resultado);
-    fwrite(&colunas_m2,sizeof(int),1,resultado);
     float soma;
     for(int i=0;i<colunas_m2;i++)
     {
@@ -29,11 +28,10 @@ int sequencial(float *m1, float *m2,args_M arg,char *nome) //Linhas da primeira,
             {
                 soma+= m1[i*arg.comum+ k]*m2[k*colunas_m2 + j];
             }
-            fwrite(&soma,sizeof(float),1,resultado); 
+            resultado[i*colunas_m2 + j] = soma;
         }
     }
-    fclose(resultado);
-    return 0;
+    return resultado;
 }
 
 float *le_matriz(char* nome, int *linhas , int *colunas)
@@ -66,10 +64,30 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     fclose(arq);
     return matriz;
 }
+int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
+{
+    size_t ret;
+    FILE *arq = fopen(nome,"wb+");
+    if(!arq)
+    {
+        printf("--Erro de abertura do arquivo %s\n",nome);
+        exit(1);
+    }
+    fwrite(&linhas_m1,sizeof(int),1,arq);
+    fwrite(&colunas_m2,sizeof(int),1,arq);
 
+    int tam = linhas_m1 * colunas_m2;
+    ret=fwrite(matriz,sizeof(float),tam,arq);
+    if(ret < tam)
+    {
+        printf("Erro de escrita no arquivo %s\n",nome);
+        exit(2);
+    }
+    return 0;
+}
 int main(int argc,char*argv[])
 {
-    float *matriz1, *matriz2;
+    float *matriz1, *matriz2,*resultado;
     int linha_m1,coluna_m1,linha_m2,coluna_m2;
     args_M arg; // Pega os Argumentos necessários
     if(argc != 4)
@@ -82,5 +100,6 @@ int main(int argc,char*argv[])
     arg.linhas = linha_m1;
     arg.comum = coluna_m1;
     arg.colunas = coluna_m2;
-    return sequencial(matriz1,matriz2,arg,argv[3]);
+    resultado = sequencial(matriz1,matriz2,arg);
+    return escreve_arquivo(argv[3],resultado,linha_m1,coluna_m2);
 }
