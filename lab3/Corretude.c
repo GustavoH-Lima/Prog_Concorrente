@@ -19,9 +19,9 @@ float *sequencial(float *m1, float *m2,args_M arg) //Linhas da primeira, colunas
         exit(1);
     }
     float soma;
-    for(int i=0;i<colunas_m2;i++)
+    for(int i=0;i<linhas_m1;i++)
     {
-        for(int j=0;j<linhas_m1;j++)
+        for(int j=0;j<colunas_m2;j++)
         {
             soma = 0;
             for (int k=0; k<arg.comum;k++) // Comum = colunas de m1
@@ -64,6 +64,7 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     fclose(arq);
     return matriz;
 }
+
 int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
 {
     size_t ret;
@@ -85,6 +86,7 @@ int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
     }
     return 0;
 }
+
 int main(int argc,char*argv[])
 {
     float *matriz1, *matriz2,*resultado;
@@ -97,6 +99,11 @@ int main(int argc,char*argv[])
     }
     matriz1=le_matriz(argv[1],&linha_m1,&coluna_m1);
     matriz2=le_matriz(argv[2],&linha_m2,&coluna_m2);
+    if(coluna_m1 != linha_m2)
+    {
+        printf("Erro na dimensão das matrizes, número de linhas da primeira diferente do número de colunas da segunda!\n");
+        return 3;
+    }
     arg.linhas = linha_m1;
     arg.comum = coluna_m1;
     arg.colunas = coluna_m2;

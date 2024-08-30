@@ -7,7 +7,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-
+#define range 1000
 //descomentar o define abaixo caso deseje imprimir uma versao truncada da matriz gerada no formato texto
 //#define TEXTO 
 
@@ -38,7 +38,7 @@ int main(int argc, char*argv[]) {
    //randomiza a sequencia de numeros aleatorios
    srand(time(NULL));
    for(long int i=0; i<tam; i++) {
-       *(matriz+i) = (rand() % 10) * 0.3;
+       *(matriz+i) = ((rand() % (2*range))-range) * 0.3; // Gera números negativos também
    }
 
    //imprimir na saida padrao a matriz gerada

@@ -4,18 +4,19 @@
 - [X] Implementar multiplicação de matrizes sequencial
     - [X] Matrizes Float
 
-- [ ] Implementar multiplicação de matrizes concorrente
-    - [ ] Entrada: Matriz float N x M
-    - [ ] Carregar de arquivos binários
-    - [ ] Usar malloc para representar matriz como vetor de float
-    - [ ] Escrever resultado como arquivo binário mesmo formato da entrada
-    -[ ] Entrada: Nome_entrada Nome_saída Quantidades_Threads
+- [X] Implementar multiplicação de matrizes concorrente
+    - Entrada: Matriz float N x M
+    - [X] Carregar de arquivos binários
+    - [X] Usar malloc para representar matriz como vetor de float
+    - [X] Escrever resultado como arquivo binário mesmo formato da entrada
+    -[X] Entrada: Nome_entrada1 Nome_Entrada2 Nome_saída Quantidades_Threads
     -[ ] Implementar tomadas de tempo de execução interna
         -[ ] Inicialização
         -[ ] Processamento
         -[ ] Finalização (Escrita no arquivo)
+
 - [ ] Verificar corretude da solução
-    - [ ] Usar diff <arq1> <arq2>
+    - [ ] Usar diff < arq1 > < arq2 >
 
 - [ ] Avaliar tempo de execução de cada parte usando matrizes de tamanho 500, 1000,2000
     - Repetir execução pelo menos 5 vezes e registrar valor médio
