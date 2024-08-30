@@ -10,10 +10,10 @@
     - [X] Usar malloc para representar matriz como vetor de float
     - [X] Escrever resultado como arquivo binário mesmo formato da entrada
     -[X] Entrada: Nome_entrada1 Nome_Entrada2 Nome_saída Quantidades_Threads
-    -[ ] Implementar tomadas de tempo de execução interna
-        -[ ] Inicialização
-        -[ ] Processamento
-        -[ ] Finalização (Escrita no arquivo)
+    -[X] Implementar tomadas de tempo de execução interna
+        -[X] Inicialização
+        -[X] Processamento
+        -[X] Finalização (Escrita no arquivo)
 
 - [ ] Verificar corretude da solução
     - [ ] Usar diff < arq1 > < arq2 >
