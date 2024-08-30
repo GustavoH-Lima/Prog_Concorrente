@@ -93,7 +93,7 @@ int main(int argc,char*argv[])
     int linha_m1,coluna_m1,linha_m2,coluna_m2;
     args_M arg; // Pega os Argumentos necessários
     struct timeval t1,t2;
-    double ms;
+    long ms;
     
     gettimeofday(&t1,NULL);  //Tomada de tempo
     if(argc != 4)
@@ -112,26 +112,26 @@ int main(int argc,char*argv[])
     arg.comum = coluna_m1;
     arg.colunas = coluna_m2;
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Entrada: %lf ms\n",ms);//Imprime tempo
+    printf("Entrada: %ld ms\n",ms);//Imprime tempo
     
     gettimeofday(&t1,NULL);  //Tomada de tempo
 
     resultado = sequencial(matriz1,matriz2,arg);
     
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Processamento: %lf ms\n",ms);//Imprime tempo
+    printf("Processamento: %ld ms\n",ms);//Imprime tempo
 
     gettimeofday(&t1,NULL);  //Tomada de tempo
     
     escreve_arquivo(argv[3],resultado,linha_m1,coluna_m2);
 
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Finalização: %lf ms\n",ms);//Imprime tempo
+    printf("Finalização: %ld ms\n",ms);//Imprime tempo
     return 0;
 }

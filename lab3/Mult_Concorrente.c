@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     float *matriz1,*matriz2;
     int linhas_m1,linhas_m2,colunas_m1,colunas_m2;
     struct timeval t1,t2;
-    double ms;
+    long ms;
 
 //Leitura da entrada
     gettimeofday(&t1,NULL);  //Tomada de tempo
@@ -111,9 +111,9 @@ int main(int argc, char *argv[])
     }
 
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms =(long) (t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Entrada: %lf ms\n",ms);//Imprime tempo
+    printf("Entrada: %ld ms\n",ms);//Imprime tempo
     
     //Processamento (Tudo que envolve a concorrência)
     gettimeofday(&t1,NULL);  //Tomada de tempo
@@ -186,9 +186,9 @@ int main(int argc, char *argv[])
     }
 
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Processamento: %lf ms\n",ms);//Imprime tempo
+    printf("Processamento: %ld ms\n",ms);//Imprime tempo
     
     // Finalização (Escrita no Arquivo)
     gettimeofday(&t1,NULL);  //Tomada de tempo
@@ -196,9 +196,9 @@ int main(int argc, char *argv[])
     escreve_arquivo(argv[3],resultado,linhas_m1,colunas_m2);
     
     gettimeofday(&t2,NULL); //Tomada de tempo
-    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms =(long) (t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Tempo de execução de Finalização: %lf ms\n",ms);//Imprime tempo
+    printf("Finalização: %ld ms\n",ms);//Imprime tempo
 
     return 0;
 }
