@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/time.h>
 typedef struct
 {
     float *m1;
@@ -48,7 +49,7 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     ret=fread(linhas,sizeof(int),1,arq);
     ret=fread(colunas,sizeof(int),1,arq);
     tam = *linhas * *colunas;
-    matriz = (float *) malloc(tam * sizeof(float*)); //Malloc para usar a matriz do tipo ponteiro
+    matriz = (float *) malloc(tam * sizeof(float)); //Malloc para usar a matriz do tipo ponteiro
     if(!matriz) //Teste do malloc
     {
         puts("Erro de malloc");
@@ -64,7 +65,7 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     return matriz;
 }
 
-int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
+void escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
 {
     size_t ret;
     FILE *arq = fopen(nome,"wb+");
@@ -83,7 +84,6 @@ int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
         printf("Erro de escrita no arquivo %s\n",nome);
         exit(2);
     }
-    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -94,9 +94,14 @@ int main(int argc, char *argv[])
         printf("Entrada deve ser: %s <Arquivo_Binario_de_entrada_1> <Arquivo_Binario_de_entrada_2> <Arquivo_de_Saida> <Quantidade de threads>\n",argv[0]);
         return 1;
     }
-    //Leitura da entrada
+    
     float *matriz1,*matriz2;
     int linhas_m1,linhas_m2,colunas_m1,colunas_m2;
+    struct timeval t1,t2;
+    double ms;
+
+//Leitura da entrada
+    gettimeofday(&t1,NULL);  //Tomada de tempo
     matriz1 = le_matriz(argv[1],&linhas_m1,&colunas_m1);
     matriz2 = le_matriz(argv[2],&linhas_m2,&colunas_m2);
     if(colunas_m1 != linhas_m2)
@@ -105,7 +110,13 @@ int main(int argc, char *argv[])
         return 3;
     }
 
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Entrada: %lf ms\n",ms);//Imprime tempo
+    
     //Processamento (Tudo que envolve a concorrência)
+    gettimeofday(&t1,NULL);  //Tomada de tempo
     argumentos *arg;
     int n_threads,fatia,resto,tam,inicio=0;
     float *resultado;
@@ -130,7 +141,7 @@ int main(int argc, char *argv[])
         fatia= linhas_m1/n_threads;
         resto = linhas_m1%n_threads;
     }
-    resultado = (float *) malloc(tam*sizeof(float*)); // Vetor para armazenar o resultado
+    resultado = (float *) malloc(tam*sizeof(float)); // Vetor para armazenar o resultado
     if(!resultado)
     {
         printf("--ERRO não foi possível alocar memória para matriz\n");
@@ -173,6 +184,21 @@ int main(int argc, char *argv[])
             return 6;
         }
     }
+
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Processamento: %lf ms\n",ms);//Imprime tempo
+    
     // Finalização (Escrita no Arquivo)
-    return escreve_arquivo(argv[3],resultado,linhas_m1,colunas_m2);
+    gettimeofday(&t1,NULL);  //Tomada de tempo
+
+    escreve_arquivo(argv[3],resultado,linhas_m1,colunas_m2);
+    
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Finalização: %lf ms\n",ms);//Imprime tempo
+
+    return 0;
 }

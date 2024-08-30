@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 typedef struct 
 {
     int linhas;
@@ -12,7 +13,7 @@ float *sequencial(float *m1, float *m2,args_M arg) //Linhas da primeira, colunas
     float *resultado;
     int linhas_m1 = arg.linhas, colunas_m2 = arg.colunas,tam;
     tam = linhas_m1 * colunas_m2;
-    resultado = (float *) malloc (tam * sizeof(float*));
+    resultado = (float *) malloc (tam * sizeof(float));
     if(!resultado)
     {
         puts("Não foi possivel alocar memória");
@@ -49,7 +50,7 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     ret=fread(linhas,sizeof(int),1,arq);
     ret=fread(colunas,sizeof(int),1,arq);
     tam = *linhas * *colunas;
-    matriz = (float *) malloc(tam * sizeof(float*));
+    matriz = (float *) malloc(tam * sizeof(float));
     if(!matriz)
     {
         puts("Erro de malloc");
@@ -65,7 +66,7 @@ float *le_matriz(char* nome, int *linhas , int *colunas)
     return matriz;
 }
 
-int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
+void escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
 {
     size_t ret;
     FILE *arq = fopen(nome,"wb+");
@@ -84,7 +85,6 @@ int escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
         printf("Erro de escrita no arquivo %s\n",nome);
         exit(2);
     }
-    return 0;
 }
 
 int main(int argc,char*argv[])
@@ -92,6 +92,10 @@ int main(int argc,char*argv[])
     float *matriz1, *matriz2,*resultado;
     int linha_m1,coluna_m1,linha_m2,coluna_m2;
     args_M arg; // Pega os Argumentos necessários
+    struct timeval t1,t2;
+    double ms;
+    
+    gettimeofday(&t1,NULL);  //Tomada de tempo
     if(argc != 4)
     {
         printf("Escreva: %s <arquivo Binario Entrada 1> <Arquivo Binario Entrada 2> <Arquivo Binario Saida>\n",argv[0]);
@@ -107,6 +111,27 @@ int main(int argc,char*argv[])
     arg.linhas = linha_m1;
     arg.comum = coluna_m1;
     arg.colunas = coluna_m2;
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Entrada: %lf ms\n",ms);//Imprime tempo
+    
+    gettimeofday(&t1,NULL);  //Tomada de tempo
+
     resultado = sequencial(matriz1,matriz2,arg);
-    return escreve_arquivo(argv[3],resultado,linha_m1,coluna_m2);
+    
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Processamento: %lf ms\n",ms);//Imprime tempo
+
+    gettimeofday(&t1,NULL);  //Tomada de tempo
+    
+    escreve_arquivo(argv[3],resultado,linha_m1,coluna_m2);
+
+    gettimeofday(&t2,NULL); //Tomada de tempo
+    ms = (t2.tv_usec - t1.tv_usec)/1000;
+    ms += (t2.tv_sec - t1.tv_sec)*1000;
+    printf("Tempo de execução de Finalização: %lf ms\n",ms);//Imprime tempo
+    return 0;
 }
