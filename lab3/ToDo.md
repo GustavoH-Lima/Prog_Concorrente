@@ -29,6 +29,6 @@
     - [X] Informar configurações da máquina
     - Documento PDF
 
-- [ ] ENTREGA
-    -[ ] Disponibilizar os códigos no Git
-    -[ ] Entregar relatório
+- [X] ENTREGA
+    -[X] Disponibilizar os códigos no Git
+    -[X] Entregar relatório
