@@ -2,13 +2,13 @@ log="LOG"
 >"$log"
 
 
-for i in $(seq 1 20);
+for i in $(seq 1 4);
 do
     mul=$((500*i))
     #Gerar os vetores de teste
     ./gera $mul $mul m1
     ./gera $mul $mul m2
-    echo "Tempos sequenciais para matriz de tamanho $mul x $mul" >>"$log"
+    #echo "Tempos sequenciais para matriz de tamanho $mul x $mul" >>"$log"
     ./mult_seq m1 m2 saida.out >> "$log" #Gabarito
     for j in $(seq 0 3);
     do
@@ -23,4 +23,9 @@ do
         done
     done
     echo"">>"$log"
+    rm -f m1
+    rm -f m2
+    rm -f saidac.out
+    rm -f saida.out
 done
+echo "Teste terminado!"

@@ -84,6 +84,7 @@ void escreve_arquivo(char *nome,float*matriz,int linhas_m1,int colunas_m2)
         printf("Erro de escrita no arquivo %s\n",nome);
         exit(2);
     }
+    fclose(arq);
 }
 
 int main(int argc, char *argv[])
@@ -113,8 +114,9 @@ int main(int argc, char *argv[])
     gettimeofday(&t2,NULL); //Tomada de tempo
     ms =(long) (t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
+
     printf("Entrada: %ld ms\n",ms);//Imprime tempo
-    
+    //printf(" %ld",ms);//Imprime tempo
     //Processamento (Tudo que envolve a concorrência)
     gettimeofday(&t1,NULL);  //Tomada de tempo
     argumentos *arg;
@@ -188,8 +190,8 @@ int main(int argc, char *argv[])
     gettimeofday(&t2,NULL); //Tomada de tempo
     ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
+    //printf(" %ld",ms);//Imprime tempo
     printf("Processamento: %ld ms\n",ms);//Imprime tempo
-    
     // Finalização (Escrita no Arquivo)
     gettimeofday(&t1,NULL);  //Tomada de tempo
 
@@ -198,7 +200,7 @@ int main(int argc, char *argv[])
     gettimeofday(&t2,NULL); //Tomada de tempo
     ms =(long) (t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
-    printf("Finalização: %ld ms\n",ms);//Imprime tempo
-
+    printf("Finalização:%ld ms\n",ms);//Imprime tempo
+    //printf(" %ld %d %d\n",ms,n_threads,linhas_m1);//Imprime tempo
     return 0;
 }

@@ -115,7 +115,7 @@ int main(int argc,char*argv[])
     ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
     printf("Entrada: %ld ms\n",ms);//Imprime tempo
-    
+    // printf(" %ld",ms);
     gettimeofday(&t1,NULL);  //Tomada de tempo
 
     resultado = sequencial(matriz1,matriz2,arg);
@@ -124,7 +124,7 @@ int main(int argc,char*argv[])
     ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
     printf("Processamento: %ld ms\n",ms);//Imprime tempo
-
+    // printf(" %ld",ms);
     gettimeofday(&t1,NULL);  //Tomada de tempo
     
     escreve_arquivo(argv[3],resultado,linha_m1,coluna_m2);
@@ -133,5 +133,6 @@ int main(int argc,char*argv[])
     ms = (long)(t2.tv_usec - t1.tv_usec)/1000;
     ms += (t2.tv_sec - t1.tv_sec)*1000;
     printf("Finalização: %ld ms\n",ms);//Imprime tempo
+    // printf(" %ld 0 %d\n",ms,linha_m1);//Imprime tempo Para o arquivo teste
     return 0;
 }

@@ -21,14 +21,14 @@
 - [X] Avaliar tempo de execução de cada parte usando matrizes de tamanho 500, 1000,2000
     - Repetir execução pelo menos 5 vezes e registrar valor médio
 
-- [ ] Calcular aceleração e eficiência( de acordo com o enunciado) executando com 1,2,4,8 threads
+- [X] Calcular aceleração e eficiência( de acordo com o enunciado) executando com 1,2,4,8 threads
 
-- [ ] RELATÓRIO
-    - [ ] Registrar os dados levantados em TABELA 
-    - [ ] Gerar gráficos de aceleração e eficiência
-    - [ ] Informar configurações da máquina
+- [X] RELATÓRIO
+    - [X] Registrar os dados levantados em TABELA 
+    - [X] Gerar gráficos de aceleração e eficiência
+    - [X] Informar configurações da máquina
     - Documento PDF
 
 - [ ] ENTREGA
-    -[ ] Disponibilizar os códigos no GIT
+    -[ ] Disponibilizar os códigos no Git
     -[ ] Entregar relatório
