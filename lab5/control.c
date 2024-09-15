@@ -11,6 +11,8 @@
 
 long int soma = 0; //variavel compartilhada entre as threads
 int bloqueado=0; //Variável de controle;
+int nthreads;
+int controle = 1; //Para imprimir enquanto for válido
 pthread_mutex_t mutex; //variavel de lock para exclusao mutua
 pthread_cond_t operadores;
 pthread_cond_t imprime;
@@ -19,6 +21,7 @@ pthread_cond_t primeiro;
 
 
 void *ExecutaTarefa (void *arg) {
+
   long int id = (long int) arg;
   printf("Thread : %ld esta executando...\n", id);
 
@@ -26,21 +29,26 @@ void *ExecutaTarefa (void *arg) {
      //--entrada na SC
      pthread_mutex_lock(&mutex);
      
-     if(soma<multiplo*(nvezes) && soma%multiplo == 0) //Se for para imprimir o número
+     if(controle && soma%multiplo == 0) //Se for para imprimir o número
      {
       if(bloqueado == 0) // A primeira thread que chegar e ver essa condição, irá sinalizar para imprimir o número e esperar, ela sempre será desbloqueada por lança a thread que a desbloqueia antes de se bloquear
       { //Essa primeira thread também é especial pois como ela será a primeira a sair, então somente ela pode incrementar a soma para que as outras threads saiam do loop
         bloqueado++; //Fala para os outros somente esperarem ele alterar a soma
-        pthread_cond_signal(&imprime); //Libera a impressão
+        pthread_cond_signal(&imprime); //Libera o imprime
         pthread_cond_wait(&primeiro,&mutex); //Se bloqueia
         pthread_cond_broadcast(&operadores); //Assim que liberado, libera todas as threads que estão esperando para verificar as condições
-        bloqueado = 0;
       }
       else
       {
-        while(soma%multiplo==0) //Threads que caírem aqui estarão esperando a primeira a modificar a variável soma
+        bloqueado++;
+        if(bloqueado == nthreads) // Se todas as threads estiverem bloqueadas, libera para imprimir
         {
-          pthread_cond_wait(&operadores,&mutex);
+          pthread_cond_signal(&imprime);
+        }
+        while(soma%multiplo==0 && controle) //Threads que caírem aqui estarão esperando a primeira a modificar a variável soma ou o controle ser liberado
+        {
+          pthread_cond_wait(&operadores,&mutex); // Se bloqueiam para esperar executar
+          
         }
       }
      }
@@ -57,18 +65,20 @@ void *ExecutaTarefa (void *arg) {
 void *extra (void *args) {
   printf("Extra : esta executando...\n");
 
-  int i=0;
   pthread_mutex_lock(&mutex);
-  do
+  for(int i=0; i< nvezes ;i++)
   {
+    if(bloqueado != nthreads) // Se nem todas as threads estiverem bloqueadas, ela se bloqueia
+    {
+      pthread_cond_wait(&imprime,&mutex);
+    }
     printf("soma = %ld\n",soma);
-    pthread_cond_signal(&primeiro); // Libera o primeiro cara para modificar a soma
-    pthread_cond_wait(&imprime,&mutex); // Se bloqueia logo em seguida
-    i++;
+    pthread_cond_signal(&primeiro); // Libera a primeira thread para executar
+    bloqueado = 0; //Sinaliza que o número de bloqueados vai ser 0 para se bloquear na próxima iteração
   }
-  while(i<nvezes);
-  pthread_cond_signal(&primeiro); // Libera o primeiro uma última vez
-  pthread_mutex_unlock(&mutex);
+  controle = 0;
+  pthread_cond_signal(&primeiro); // Libera a primeira caso ela tenha se bloqueado, assim lobera todas as threads para terminarem a execução
+  pthread_mutex_unlock(&mutex);  //Sai da SC
 
   printf("Extra : terminou!\n");
   pthread_exit(NULL);
@@ -77,7 +87,6 @@ void *extra (void *args) {
 //fluxo principal
 int main(int argc, char *argv[]) {
    pthread_t *tid; //identificadores das threads no sistema
-   int nthreads; //qtde de threads (passada linha de comando)
 
    //--le e avalia os parametros de entrada
    if(argc<2) {
