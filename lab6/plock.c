@@ -50,7 +50,7 @@ void sai_escrita()
     escritores--;
     if(quer_escrever == 0) //Se ninguem mais quiser escrever, desbloqueia pra leitura
     {
-         // printf("Fui o último a escrever, irei liberar todas as leituras escritores = %d \n",escritores);
+         printf("Fui o último a escrever, irei liberar todas as leituras escritores = %d \n",escritores);
         pthread_cond_broadcast(&f_leitura);
     }
     else //Caso contrário, libera o próximo a escrever
@@ -65,7 +65,7 @@ void entra_leitura()
    pthread_mutex_lock(&mutex); // Pego o lock
    while(quer_escrever || escritores) //Caso alguém queira escrever ou esteja escrevendo, se bloqueia
    {
-      // printf("Há %d escritores querendo escrever e %d escrevendo, irei me bloquear!\n",quer_escrever,escritores);
+      printf("Há %d escritores querendo escrever e %d escrevendo, irei me bloquear!\n",quer_escrever,escritores);
       pthread_cond_wait(&f_leitura,&mutex);
    }
    leitores++;
@@ -78,7 +78,7 @@ void sai_leitura()
    leitores--;
    if(quer_escrever != 0 && leitores == 0) // Se alguem quiser escrever e for o ultimo leitor, libera a escrita e segue a vida
    {
-      // printf("Fui o último a ler, liberando todas as escrituras numero de leitores = %d\n",leitores);
+      printf("Fui o último a ler, liberando todas as escrituras numero de leitores = %d\n",leitores);
       pthread_cond_broadcast(&f_escrita);
    }
    pthread_mutex_unlock(&mutex);
