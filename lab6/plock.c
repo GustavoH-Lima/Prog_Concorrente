@@ -172,6 +172,11 @@ int main(int argc, char* argv[]) {
    printf("Tempo: %lf\n", delta);
 
    //libera o mutex
+   for (int t=0; t<nthreads+1; t++) {
+     if (pthread_join(tid[t], NULL)) {
+         printf("--ERRO: pthread_join() \n"); exit(-1); 
+     } 
+   } 
    pthread_mutex_destroy(&mutex);
    pthread_cond_destroy(&f_escrita);
    pthread_cond_destroy(&f_escrita_interna);
