@@ -9,9 +9,11 @@
 #define bool int
 
 sem_t entrada1,entrada2,saida1,saida2; //1,0,1,0
+
 char buffer_1[N];
 char buffer_2[2*N]; //Buffer 2 com o dobro do tamanho caso tenha sempre adição
 int vezes=0;
+
 bool pega_chunk(FILE *arq, char *buffer)
 {
     char carac;
@@ -19,7 +21,7 @@ bool pega_chunk(FILE *arq, char *buffer)
     {
         carac = fgetc(arq);
         buffer[i] = carac;
-        if(carac == EOF) // Se terminar de ler o arquivo, diz para acabar.
+        if(carac == EOF) // Se encontrar o final do arquivo, termina as execuções
         {
             return 0;
         }
@@ -37,20 +39,20 @@ bool processa(char *buffer_local,int *contador,char *buffer_dobro_local)
         carac = buffer_local[i];
         if(carac == EOF)
         {
-            buffer_dobro_local[2*N - 1] = carac; // Põe na última posição o EOF para terminar a última thread
+            buffer_dobro_local[2*N - 1] = carac; // Põe na última posição o EOF para terminar a última thread.
             buffer_dobro_local[i+postos] = '\0'; //Coloca para imprimir
             return 0;
         }
         buffer_dobro_local[i+postos]=carac; //Copiando caracter a caracter
         (*contador)++; //Acrescentando o contador
-        if((*contador) == (2*vezes+1) && vezes <= 10) //Adicionar o \n ao buffer a cada numero pedido
+        if((*contador) == (2*vezes+1) && vezes <= 10) //Adicionar o \n ao buffer
         {
             *contador = 0;
             vezes++;
             postos++;
             buffer_dobro_local[i+postos] = '\n';
         }
-        else if(vezes >10 && ((*contador) == 10)) // Quando já foram impressos 10 '\n' começa a inserir a cada 10
+        else if(vezes >10 && ((*contador) == 10))
         {
             *contador = 0;
             postos++;
@@ -81,6 +83,7 @@ void *t1(void *arg) //Sempre que lê e coloca no buffer, adiciona um post em ent
     }
     while(sai);
     fclose(arq);
+    // puts("Thread 1 terminou");
     pthread_exit(NULL);
 }
 
@@ -89,7 +92,7 @@ void *t2(void *arg) //Sempre que modifica e coloca no buffer, adiciona um post a
     char buffer_local[N];
     char buffer_local_dobrada[2*N];
     int contador = 0;
-    bool continua;
+    bool continua; // Variável para saber se continua sua função
     do
     {
         sem_wait(&entrada2); //começa com 0
@@ -105,34 +108,35 @@ void *t2(void *arg) //Sempre que modifica e coloca no buffer, adiciona um post a
 
         strcpy(buffer_2,buffer_local_dobrada); //escreve em buffer 2
         
-        if(buffer_local_dobrada[2*N-1] == EOF) // Para resolver minha condição de parada das threads
+        if(buffer_local_dobrada[2*N-1] == EOF) //Forçando que o ultimo do buffer 2 também seja EOF caso esse seja, pois, por algum motivo, o scrcpy não estava copiando o EOF do final, suspeito que seja por estar depois de '\0'
         {
-            buffer_2[2*N-1] = EOF; // Por algum motivo, o strcpy não estava copiando o EOF depois do \0, creio que por ser depois do \0, então eu forço isso com esse comando
+            buffer_2[2*N-1] = EOF;
         }
 
-        sem_post(&saida2); // Libera pra printar na tela
+        sem_post(&saida2);
     }
     while(continua);
+    // puts("Thread 2 terminou");
     pthread_exit(NULL);
 }
 
 void *t3(void *arg)
 {
     char buffer_local[N];
-    bool continua = 1;
-    do
+    bool continua = 1; // Variável para saber se pode acabar a sua função
+
+    while(continua)
     {
-        // puts("Estou me bloqueando");
         sem_wait(&saida2); //começa com 0
-        // puts("Estou me desbloqueando");
-        if(buffer_2[2*N-1] == EOF) continua = 0;
+        
+        if(buffer_2[2*N-1] == EOF) continua = 0; // Verifica se vai acabar
+        
         strcpy(buffer_local,buffer_2); //Pega o buffer
 
-        sem_post(&saida1); //permite a escrever no buffer2 dnv 
+        sem_post(&saida1); //permite a escrever no buffer2 de novo
 
-        printf("%s",buffer_local); // Escreve na tela
+        printf("%s",buffer_local);
     }
-    while(continua);
     // puts("Thread 3 terminou");
     pthread_exit(NULL);
 }
@@ -140,18 +144,21 @@ void *t3(void *arg)
 int main(int argc, char *argv[])
 {
     pthread_t tid[nthreads];
+    //Validação das entradas
+    
     if(argc < 2)
     {
         puts("Entrada: ./<Nome do programa> <Arquivo de entrada>");
         exit(1);
     }
     
+    //Inicialização dos semáforos
     sem_init(&entrada1,0,1);
     sem_init(&entrada2,0,0);
     sem_init(&saida1,0,1);
     sem_init(&saida2,0,0);
 
-
+    //Criação das threads
     if(pthread_create(&tid[0],NULL,t1,(void *) argv[1]))
     {
         puts("Erro ao criar thread 1!");
@@ -170,11 +177,17 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    for (int t=0; t<nthreads; t++) {
-     if (pthread_join(tid[t], NULL)) {
-         printf("--ERRO: pthread_join() \n"); exit(-1); 
-     } 
-   } 
+    //Esperando todas terminarem
+    for (int t=0; t<nthreads; t++) 
+    {
+        if (pthread_join(tid[t], NULL))
+        {
+            printf("--ERRO: pthread_join() \n"); 
+            exit(-1);  
+        }
+    } 
+
+    // Destruindo os semáforos.
     sem_destroy(&entrada1);
     sem_destroy(&entrada2);
     sem_destroy(&saida1);
