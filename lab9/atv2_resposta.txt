@@ -1,0 +1,3 @@
+2. Pois a espera por uma mensagem do canal é uma chamada bloqueante. Portanto, a main ficará esperando uma mensagem ser posta pela thread e não terminará.
+
+3.Agora ele imprimiu uma string vazia pois a variável "msg" não recebeu nada além da atribuição inicial.
